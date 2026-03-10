@@ -1,166 +1,101 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { ChevronRight, LogOut, Menu, Sparkles, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { label: "Landing", href: "/" },
-  { label: "Features", href: "/#features" },
-  { label: "Workflow", href: "/#workflow" },
-  { label: "Proof", href: "/#proof" },
-  { label: "Assistant", href: "/assistant" },
+  { label: "Production", href: "/" },
+  { label: "Maintenance", href: "/#workflow" },
+  { label: "QC", href: "/#proof" },
 ];
 
-function getBreadcrumbs(pathname: string) {
-  if (pathname === "/") {
-    return [
-      { label: "Home", href: "/" },
-      { label: "Landing", href: "/" },
-    ];
-  }
-
-  const segments = pathname.split("/").filter(Boolean);
-  const crumbs = [{ label: "Home", href: "/" }];
-
-  let currentPath = "";
-  for (const segment of segments) {
-    currentPath += `/${segment}`;
-    crumbs.push({
-      label: segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, " "),
-      href: currentPath,
-    });
-  }
-
-  return crumbs;
-}
-
 export function SiteHeader() {
-  const pathname = usePathname();
-  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
-  const breadcrumbs = getBreadcrumbs(pathname);
-
   return (
-    <header className="sticky top-0 z-50 w-full px-6 py-4">
-      <div className="mx-auto flex max-w-4xl items-center justify-between rounded-2xl border border-white/18 bg-white/10 p-4 shadow-[0_8px_32px_rgba(31,38,135,0.15)] backdrop-blur-[20px]">
-        <div className="flex min-w-0 items-center gap-3">
-          <Link href="/" className="min-w-0" onClick={() => setIsOpen(false)}>
-            <span className="bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-lg font-bold text-transparent">
-              SmartyFy
-            </span>
-          </Link>
-          <span className="text-white/28">/</span>
-          <span className="truncate text-xs font-medium uppercase tracking-[0.18em] text-white/62">
-            Version 1
-          </span>
-        </div>
+    <header className="w-full px-5 pt-5 md:px-10 md:pt-6">
+      <div className="mx-auto w-full rounded-[3.5rem] bg-[#b8b8b8] px-6 py-5 shadow-[0_22px_48px_rgba(0,0,0,0.08)] md:px-14 md:py-7">
+        <div className="grid items-center gap-5 md:grid-cols-[1fr_auto_1fr]">
+          <div className="hidden items-center gap-14 md:flex">
+            {navItems.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="text-[1.15rem] font-semibold tracking-[-0.03em] text-white transition-opacity hover:opacity-80"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
 
-        <div className="hidden items-center gap-2 md:flex">
-          <Button asChild variant="glass-outline" size="sm">
-            <Link href="/assistant">
-              <Sparkles className="h-4 w-4" />
-              Assistant
-            </Link>
-          </Button>
-          <Button
-            type="button"
-            variant="glass-ghost"
-            size="sm"
-            onClick={() => {
-              setIsOpen(false);
-              router.push("/");
-            }}
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
-          </Button>
-        </div>
-
-        <Button
-          type="button"
-          variant="glass-ghost"
-          size="icon"
-          className="md:hidden"
-          onClick={() => setIsOpen((open) => !open)}
-          aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
-          aria-expanded={isOpen}
-        >
-          {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
-      </div>
-
-      <div className="mx-auto mt-3 flex max-w-4xl flex-wrap items-center gap-2 px-2 text-sm text-white/72">
-        {breadcrumbs.map((crumb, index) => {
-          const isLast = index === breadcrumbs.length - 1;
-          return (
-            <div key={crumb.href} className="flex items-center gap-2">
-              {index > 0 ? <ChevronRight className="h-4 w-4 text-white/36" /> : null}
-              {isLast ? (
-                <span className="rounded-full border border-white/14 bg-white/8 px-3 py-1.5 text-white">
-                  {crumb.label}
-                </span>
-              ) : (
-                <Link
-              href={crumb.href}
-              onClick={() => setIsOpen(false)}
-              className="rounded-full px-1 py-1 text-white/70 transition-colors hover:text-white"
-            >
-                  {crumb.label}
-                </Link>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      <div
-        className={cn(
-          "mx-auto mt-3 max-w-4xl overflow-hidden rounded-2xl border border-white/18 bg-white/10 shadow-[0_8px_32px_rgba(31,38,135,0.15)] backdrop-blur-[20px] transition-[max-height,opacity,transform] duration-300 md:hidden",
-          isOpen
-            ? "max-h-[28rem] translate-y-0 p-4 opacity-100"
-            : "max-h-0 -translate-y-2 p-0 opacity-0",
-        )}
-      >
-        <nav className="flex flex-col gap-2">
-          {navItems.map((item) => (
+          <div className="flex items-center justify-between md:hidden">
             <Link
-              key={item.href}
-              href={item.href}
+              href="/"
+              className="text-[2rem] font-bold tracking-[-0.05em] text-white"
               onClick={() => setIsOpen(false)}
-              className={cn(
-                "rounded-xl px-4 py-3 text-sm font-medium text-white/82 transition-colors hover:bg-white/12 hover:text-white",
-                pathname === item.href && "bg-white/14 text-white",
-              )}
             >
-              {item.label}
+              SmartyFy
             </Link>
-          ))}
-        </nav>
-        <div className="mt-4 grid gap-2">
-          <Button asChild variant="glass-outline" className="w-full">
-            <Link href="/assistant" onClick={() => setIsOpen(false)}>
-              <Sparkles className="h-4 w-4" />
-              Assistant
-            </Link>
-          </Button>
-          <Button
-            type="button"
-            variant="glass-ghost"
-            className="w-full"
-            onClick={() => {
-              setIsOpen(false);
-              router.push("/");
-            }}
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-12 w-12 rounded-full bg-white/12 text-white hover:bg-white/18"
+              onClick={() => setIsOpen((open) => !open)}
+              aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={isOpen}
+            >
+              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          </div>
+
+          <Link
+            href="/"
+            className="hidden text-center text-[2.9rem] font-bold leading-none tracking-[-0.07em] text-white md:block"
           >
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
-          </Button>
+            SmartyFy
+          </Link>
+
+          <div className="hidden justify-end md:flex">
+            <Button
+              asChild
+              className="h-auto rounded-full border border-[#56a8ff] bg-[#3391ff] px-11 py-4 text-[1.05rem] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.24),0_2px_0_rgba(255,255,255,0.12)] hover:-translate-y-0.5 hover:bg-[#2f87ee]"
+            >
+              <Link href="/#cta">Get Started</Link>
+            </Button>
+          </div>
+        </div>
+
+        <div
+          className={cn(
+            "overflow-hidden transition-[max-height,margin,opacity] duration-300 md:hidden",
+            isOpen ? "mt-5 max-h-80 opacity-100" : "max-h-0 opacity-0",
+          )}
+        >
+          <nav className="flex flex-col gap-2 border-t border-white/18 pt-5">
+            {navItems.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="rounded-2xl px-4 py-3 text-base font-semibold tracking-[-0.03em] text-white transition-colors hover:bg-white/10"
+                onClick={() => setIsOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ))}
+            <Button
+              asChild
+              className="mt-2 h-auto rounded-full border border-[#56a8ff] bg-[#3391ff] px-7 py-3 text-base font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.24),0_2px_0_rgba(255,255,255,0.12)] hover:-translate-y-0.5 hover:bg-[#2f87ee]"
+            >
+              <Link href="/#cta" onClick={() => setIsOpen(false)}>
+                Get Started
+              </Link>
+            </Button>
+          </nav>
         </div>
       </div>
     </header>
