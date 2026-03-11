@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 interface HeroProps {
   eyebrow?: string
   title: string
-  subtitle: string
   ctaLabel?: string
   ctaHref?: string
 }
@@ -14,7 +13,6 @@ interface HeroProps {
 export function Hero({
   eyebrow = "Innovate Without Limits",
   title,
-  subtitle,
   ctaLabel = "Explore Now",
   ctaHref = "#",
 }: HeroProps) {
@@ -63,29 +61,20 @@ export function Hero({
 
       {/* Title */}
       <h1
-        className="animate-fade-in -translate-y-4 text-balance 
+        className="animate-fade-in -translate-y-4 text-balance font-sans
         bg-gradient-to-br from-black from-30% to-black/40 
-        bg-clip-text py-6 text-5xl font-semibold leading-none tracking-tighter 
+        bg-clip-text py-6 text-5xl font-bold leading-none tracking-tighter 
         text-transparent opacity-0 sm:text-6xl md:text-7xl lg:text-8xl 
         dark:from-white dark:to-white/40"
       >
         {title}
       </h1>
 
-      {/* Subtitle */}
-      <p
-        className="animate-fade-in mb-12 -translate-y-4 text-balance 
-        text-lg tracking-tight text-gray-600 dark:text-gray-400 
-        opacity-0 md:text-xl"
-      >
-        {subtitle}
-      </p>
-
       {/* CTA */}
       {ctaLabel && (
-        <div className="flex justify-center">
+        <div className="flex justify-center mt-2">
           <Button
-            className="mt-[-20px] w-fit md:w-52 z-20 font-sans tracking-tighter text-center text-lg"
+            className="w-fit md:w-52 z-20 font-sans tracking-tighter text-center text-lg"
             render={<a href={ctaHref} />}
           >
             {ctaLabel}

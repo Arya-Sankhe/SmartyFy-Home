@@ -5,8 +5,7 @@ export default function Home() {
     <main>
       <Hero
         eyebrow="Innovate Without Limits"
-        title="Build Something Amazing Today"
-        subtitle="Create stunning experiences with cutting-edge technology and beautiful design."
+        title="Machines with SuperIntelligence"
         ctaLabel="Explore Now"
         ctaHref="#"
       />
