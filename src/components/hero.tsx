@@ -36,7 +36,7 @@ export function Hero({
 
       {/* Radial Accent */}
       <div
-        className="absolute left-1/2 top-[calc(100%-90px)] lg:top-[calc(100%-150px)] 
+        className="absolute left-1/2 top-[calc(100%-60px)] lg:top-[calc(100%-100px)] 
         h-[500px] w-[700px] md:h-[500px] md:w-[1100px] lg:h-[750px] lg:w-[140%] 
         -translate-x-1/2 rounded-[100%] border-[#B48CDE] bg-white dark:bg-black 
         bg-[radial-gradient(closest-side,#fff_82%,#000000)] 
@@ -72,7 +72,7 @@ export function Hero({
 
       {/* CTA */}
       {ctaLabel && (
-        <div className="flex justify-center mt-2">
+        <div className="flex justify-center mt-8 mb-16">
           <Button
             className="w-fit md:w-52 z-20 font-sans tracking-tighter text-center text-lg"
             render={<a href={ctaHref} />}
