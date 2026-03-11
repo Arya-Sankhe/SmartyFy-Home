@@ -42,7 +42,7 @@ export function Hero({
       />
 
       {/* Content: title + button, in upper ~55% of screen */}
-      <div className="relative z-10 flex flex-col items-center text-center px-6 md:px-8 pt-[15vh] gap-10">
+      <div className="relative z-10 flex flex-col items-center text-center px-6 md:px-8 pt-[22vh] gap-20">
         <h1
           className="animate-fade-in text-balance font-sans
           bg-gradient-to-br from-black from-30% to-black/40 
