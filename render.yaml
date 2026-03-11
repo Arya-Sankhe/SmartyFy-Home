@@ -1,7 +1,0 @@
-services:
-  - type: web
-    runtime: static
-    name: smartyfy-home
-    branch: main
-    buildCommand: npm install && npm run build
-    staticPublishPath: ./out
