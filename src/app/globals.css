@@ -127,3 +127,34 @@
     @apply font-sans;
   }
 }
+
+/* Custom animations for Hero */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility animate-fade-in {
+  animation: fade-in 1s ease forwards;
+}
+
+@utility animate-fade-up {
+  animation: fade-up 1s ease forwards;
+}
