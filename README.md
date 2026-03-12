@@ -1,4 +1,4 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is a [Next.js](https://nextjs.org) landing page for SmartyFy AI.
 
 ## Getting Started
 
@@ -16,9 +16,19 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+You can start editing the page by modifying `src/app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Render Deploy
+
+This repo is configured for Render Static Site deploys:
+
+- Build command: `npm ci && npm run build`
+- Publish directory: `out`
+- Node version: `22.22.0`
+
+The required Render blueprint is in `render.yaml`.
+
+Because the site is exported statically, `next build` now generates the `out/` directory automatically.
 
 ## Learn More
 

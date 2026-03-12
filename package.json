@@ -2,6 +2,9 @@
   "name": "smartyfy-home",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.9.0 <23"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -13,6 +16,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.577.0",
+    "motion": "^12.35.2",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",

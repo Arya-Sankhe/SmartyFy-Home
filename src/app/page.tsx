@@ -1,4 +1,5 @@
 import { Hero } from "@/components/hero";
+import { CapabilitySpotlight } from "@/components/capability-spotlight";
 
 export default function Home() {
   return (
@@ -6,8 +7,9 @@ export default function Home() {
       <Hero
         title="Machines with SuperIntelligence"
         ctaLabel="Explore Now"
-        ctaHref="#"
+        ctaHref="#capabilities"
       />
+      <CapabilitySpotlight />
     </main>
   );
 }
