@@ -12,7 +12,7 @@ export function CapabilitySpotlight() {
   return (
     <section
       id="capabilities"
-      className="relative overflow-hidden bg-[#efefef] text-[#17171c]"
+      className="relative overflow-hidden bg-[#e8e8e8] text-[#17171c]"
     >
       <div className="relative mx-auto flex min-h-[38vh] max-w-6xl items-center justify-center px-6 py-20 sm:px-8 md:min-h-[44vh] md:py-28">
         <div className="flex flex-col items-center justify-center gap-5 text-center md:flex-row md:gap-7">
@@ -20,8 +20,8 @@ export function CapabilitySpotlight() {
             Ask about
           </p>
 
-          <div className="flex min-h-[5.25rem] min-w-[8.5rem] items-center justify-center overflow-hidden rounded-[1.75rem] border border-black/[0.07] bg-[#d9d9d9] px-6 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_18px_40px_rgba(0,0,0,0.08)] sm:min-h-[6rem] sm:min-w-[10rem] sm:px-8">
-            <div className="overflow-hidden">
+          <div className="flex min-h-[5.25rem] min-w-[8.5rem] items-center justify-center overflow-hidden rounded-[1.75rem] border border-black/[0.07] bg-[#d9d9d9] px-7 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_18px_40px_rgba(0,0,0,0.08)] sm:min-h-[6rem] sm:min-w-[10rem] sm:px-10">
+            <div className="overflow-y-hidden overflow-x-visible px-[0.08em]">
               <TextRotate
                 texts={rotatingTerms}
                 rotationInterval={2200}
@@ -36,7 +36,7 @@ export function CapabilitySpotlight() {
                   damping: 28,
                   mass: 0.85,
                 }}
-                mainClassName="h-[1.08em] items-center justify-center overflow-hidden whitespace-nowrap text-[clamp(3rem,7.4vw,6.5rem)] font-light leading-none tracking-[-0.09em] text-[#17171c]"
+                mainClassName="h-[1.08em] items-center justify-center overflow-y-hidden overflow-x-visible whitespace-nowrap px-[0.04em] text-[clamp(3rem,7.4vw,6.5rem)] font-light leading-none tracking-[-0.075em] text-[#17171c]"
                 splitLevelClassName="w-full items-center justify-center"
                 elementLevelClassName="inline-block"
               />
