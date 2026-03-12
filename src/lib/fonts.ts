@@ -1,6 +1,6 @@
-import { Outfit } from "next/font/google"
+import { Plus_Jakarta_Sans } from "next/font/google"
 
-export const outfit = Outfit({
+export const brandSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["700", "800", "900"],
+  weight: ["600", "700", "800"],
 })

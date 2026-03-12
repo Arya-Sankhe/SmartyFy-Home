@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { brandSans } from "@/lib/fonts";
 
 export function Navbar() {
   return (
@@ -16,7 +17,7 @@ export function Navbar() {
 
         <Link 
           href="/" 
-          className="font-sans text-[26px] font-bold tracking-tight text-white drop-shadow-sm"
+          className={`${brandSans.className} text-[26px] font-[800] tracking-[-0.03em] text-white drop-shadow-sm`}
         >
           SmartyFy
         </Link>

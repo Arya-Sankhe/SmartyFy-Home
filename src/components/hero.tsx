@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { outfit } from "@/lib/fonts"
+import { brandSans } from "@/lib/fonts"
 
 interface HeroProps {
   title: string
@@ -45,9 +45,9 @@ export function Hero({
       {/* Content: title + button, in upper ~55% of screen */}
       <div className="relative z-10 flex flex-col items-center text-center px-6 md:px-8 pt-[22vh] gap-20">
         <h1
-          className={`${outfit.className} animate-fade-in whitespace-pre-line
+          className={`${brandSans.className} animate-fade-in whitespace-pre-line px-[0.03em] pb-[0.06em]
           bg-gradient-to-br from-black from-30% to-black/40 
-          bg-clip-text text-[clamp(3.9rem,9vw,7.75rem)] font-[800] leading-[0.9] tracking-[-0.075em]
+          bg-clip-text text-[clamp(3.65rem,8.4vw,7.1rem)] font-[800] leading-[0.94] tracking-[-0.04em]
           text-transparent dark:from-white dark:to-white/40`}
         >
           {title}
@@ -55,7 +55,7 @@ export function Hero({
 
         {ctaLabel && (
           <Button
-            className="w-fit md:w-52 font-sans tracking-tighter text-center text-lg"
+            className={`${brandSans.className} w-fit md:w-52 font-[700] tracking-[-0.03em] text-center text-lg`}
             render={<a href={ctaHref} />}
           >
             {ctaLabel}
