@@ -1,11 +1,5 @@
-import { Outfit } from "next/font/google"
-
 import { TextRotate } from "@/components/ui/text-rotate"
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  weight: ["700", "800", "900"],
-})
+import { outfit } from "@/lib/fonts"
 
 const rotatingTerms = [
   "Troubleshoots",
@@ -13,6 +7,10 @@ const rotatingTerms = [
   "Operates",
   "Trains",
 ]
+
+const widestTerm = rotatingTerms.reduce((widest, term) =>
+  term.length > widest.length ? term : widest
+)
 
 export function CapabilitySpotlight() {
   return (
@@ -28,9 +26,17 @@ export function CapabilitySpotlight() {
             Machine Intelligence That
           </p>
 
-          <div className="relative flex min-h-[5.8rem] min-w-[18rem] items-center justify-center overflow-hidden rounded-[1.9rem] border border-white/[0.55] bg-[linear-gradient(135deg,rgba(202,202,208,0.78),rgba(160,160,168,0.9))] px-8 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.34),0_22px_44px_rgba(0,0,0,0.08)] backdrop-blur-xl sm:min-h-[6.5rem] sm:min-w-[21rem] sm:px-10 md:min-w-[24rem] lg:min-w-[26rem]">
+          <div className="relative inline-grid min-h-[5.35rem] shrink-0 grid-cols-1 grid-rows-1 items-center overflow-hidden rounded-[1.7rem] border border-white/[0.55] bg-[linear-gradient(135deg,rgba(208,208,214,0.72),rgba(164,164,171,0.88))] px-5 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.34),0_22px_44px_rgba(0,0,0,0.08)] backdrop-blur-xl sm:min-h-[5.95rem] sm:px-6">
             <div className="pointer-events-none absolute inset-[1px] rounded-[calc(1.9rem-1px)] bg-[linear-gradient(180deg,rgba(255,255,255,0.2),rgba(255,255,255,0.08)_34%,rgba(255,255,255,0.02))]" />
-            <div className="relative overflow-y-hidden overflow-x-visible px-[0.18em]">
+            <div className="invisible col-start-1 row-start-1">
+              <span
+                className={`${outfit.className} block whitespace-nowrap px-[0.16em] text-[clamp(2.6rem,4.15vw,4.75rem)] font-[700] leading-none tracking-[-0.055em]`}
+              >
+                {widestTerm}
+              </span>
+            </div>
+
+            <div className="relative col-start-1 row-start-1 overflow-y-hidden overflow-x-visible px-[0.16em]">
               <TextRotate
                 texts={rotatingTerms}
                 rotationInterval={2200}
@@ -45,7 +51,7 @@ export function CapabilitySpotlight() {
                   damping: 28,
                   mass: 0.85,
                 }}
-                mainClassName={`${outfit.className} h-[1.06em] items-center justify-center overflow-y-hidden overflow-x-visible whitespace-nowrap px-[0.12em] text-[clamp(2.6rem,4.15vw,4.75rem)] font-[700] leading-none tracking-[-0.055em] text-white`}
+                mainClassName={`${outfit.className} h-[1.06em] items-center justify-center overflow-y-hidden overflow-x-visible whitespace-nowrap px-[0.04em] text-[clamp(2.6rem,4.15vw,4.75rem)] font-[700] leading-none tracking-[-0.055em] text-white`}
                 splitLevelClassName="w-full items-center justify-center px-[0.02em]"
                 elementLevelClassName="inline-block"
               />

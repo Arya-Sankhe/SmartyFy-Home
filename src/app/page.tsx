@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <main>
       <Hero
-        title="Machines with SuperIntelligence"
+        title={"Machine with\nSuperIntelligence"}
         ctaLabel="Explore Now"
         ctaHref="#capabilities"
       />

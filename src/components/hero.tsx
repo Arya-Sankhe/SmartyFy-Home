@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { outfit } from "@/lib/fonts"
 
 interface HeroProps {
   title: string
@@ -44,11 +45,10 @@ export function Hero({
       {/* Content: title + button, in upper ~55% of screen */}
       <div className="relative z-10 flex flex-col items-center text-center px-6 md:px-8 pt-[22vh] gap-20">
         <h1
-          className="animate-fade-in text-balance font-sans
+          className={`${outfit.className} animate-fade-in whitespace-pre-line
           bg-gradient-to-br from-black from-30% to-black/40 
-          bg-clip-text text-5xl font-bold leading-none tracking-tighter 
-          text-transparent sm:text-6xl md:text-7xl lg:text-8xl 
-          dark:from-white dark:to-white/40"
+          bg-clip-text text-[clamp(3.9rem,9vw,7.75rem)] font-[800] leading-[0.9] tracking-[-0.075em]
+          text-transparent dark:from-white dark:to-white/40`}
         >
           {title}
         </h1>
