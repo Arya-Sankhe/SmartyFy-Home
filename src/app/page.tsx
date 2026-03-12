@@ -1,5 +1,6 @@
 import { Hero } from "@/components/hero";
 import { CapabilitySpotlight } from "@/components/capability-spotlight";
+import { ChatPreviewSection } from "@/components/chat-preview-section";
 
 export default function Home() {
   return (
@@ -10,6 +11,7 @@ export default function Home() {
         ctaHref="#capabilities"
       />
       <CapabilitySpotlight />
+      <ChatPreviewSection />
     </main>
   );
 }
