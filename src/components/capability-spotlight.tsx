@@ -12,7 +12,7 @@ export function CapabilitySpotlight() {
   return (
     <section
       id="capabilities"
-      className="relative overflow-hidden bg-[#e8e8e8] text-[#17171c]"
+      className="relative -mt-px overflow-hidden bg-white text-[#17171c]"
     >
       <div className="relative mx-auto flex min-h-[38vh] max-w-6xl items-center justify-center px-6 py-20 sm:px-8 md:min-h-[44vh] md:py-28">
         <div className="flex flex-col items-center justify-center gap-5 text-center md:flex-row md:gap-7">
