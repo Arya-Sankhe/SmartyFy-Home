@@ -39,88 +39,148 @@ const manufacturerBullets = [
 
 const introText =
   "Film slippage (film slipping) is usually caused by film tension, worn or dirty pull components, misaligned rolls, or bad splices. The manual documents the fault indicators on the Home Screen and gives specific causes and corrective actions you should run through before calling service."
+const headingText = "Manufacturer's Solution"
 
 const STREAM_STEP_MS = 28
 const STREAM_RESET_MS = 2600
+const INTRO_PAUSE_FRAMES = 8
+const HEADING_PAUSE_FRAMES = 7
+const BULLET_PAUSE_FRAMES = 6
+
+interface StreamFrame {
+  introCount: number
+  headingCount: number
+  bulletsVisible: number
+  bulletWordCounts: number[]
+}
 
 export function ChatPreviewSection() {
   const scrollRef = useRef<HTMLDivElement>(null)
-  const [introWordsVisible, setIntroWordsVisible] = useState(0)
-  const [bulletsVisible, setBulletsVisible] = useState(0)
-  const [bulletWordCounts, setBulletWordCounts] = useState<number[]>(
-    manufacturerBullets.map(() => 0)
-  )
+  const [currentFrame, setCurrentFrame] = useState(0)
 
   const introWords = useMemo(() => introText.split(" "), [])
+  const headingWords = useMemo(() => headingText.split(" "), [])
+  const bulletWordLists = useMemo(
+    () => manufacturerBullets.map((bullet) => bullet.content.split(" ")),
+    []
+  )
+
+  const timeline = useMemo<StreamFrame[]>(() => {
+    const zeroCounts = manufacturerBullets.map(() => 0)
+    const frames: StreamFrame[] = [
+      {
+        introCount: 0,
+        headingCount: 0,
+        bulletsVisible: 0,
+        bulletWordCounts: [...zeroCounts],
+      },
+    ]
+
+    for (let index = 1; index <= introWords.length; index += 1) {
+      frames.push({
+        introCount: index,
+        headingCount: 0,
+        bulletsVisible: 0,
+        bulletWordCounts: [...zeroCounts],
+      })
+    }
+
+    for (let index = 0; index < INTRO_PAUSE_FRAMES; index += 1) {
+      frames.push({
+        introCount: introWords.length,
+        headingCount: 0,
+        bulletsVisible: 0,
+        bulletWordCounts: [...zeroCounts],
+      })
+    }
+
+    for (let index = 1; index <= headingWords.length; index += 1) {
+      frames.push({
+        introCount: introWords.length,
+        headingCount: index,
+        bulletsVisible: 0,
+        bulletWordCounts: [...zeroCounts],
+      })
+    }
+
+    for (let index = 0; index < HEADING_PAUSE_FRAMES; index += 1) {
+      frames.push({
+        introCount: introWords.length,
+        headingCount: headingWords.length,
+        bulletsVisible: 0,
+        bulletWordCounts: [...zeroCounts],
+      })
+    }
+
+    const completedCounts = [...zeroCounts]
+
+    bulletWordLists.forEach((bulletWords, bulletIndex) => {
+      for (let wordIndex = 1; wordIndex <= bulletWords.length; wordIndex += 1) {
+        const nextCounts = [...completedCounts]
+        nextCounts[bulletIndex] = wordIndex
+
+        frames.push({
+          introCount: introWords.length,
+          headingCount: headingWords.length,
+          bulletsVisible: bulletIndex + 1,
+          bulletWordCounts: nextCounts,
+        })
+      }
+
+      completedCounts[bulletIndex] = bulletWords.length
+
+      for (let pauseIndex = 0; pauseIndex < BULLET_PAUSE_FRAMES; pauseIndex += 1) {
+        frames.push({
+          introCount: introWords.length,
+          headingCount: headingWords.length,
+          bulletsVisible: bulletIndex + 1,
+          bulletWordCounts: [...completedCounts],
+        })
+      }
+    })
+
+    const resetFrames = Math.max(1, Math.round(STREAM_RESET_MS / STREAM_STEP_MS))
+
+    for (let index = 0; index < resetFrames; index += 1) {
+      frames.push({
+        introCount: introWords.length,
+        headingCount: headingWords.length,
+        bulletsVisible: manufacturerBullets.length,
+        bulletWordCounts: [...completedCounts],
+      })
+    }
+
+    return frames
+  }, [bulletWordLists, headingWords, introWords])
+
+  const frame = timeline[currentFrame] ?? timeline[0]
 
   useEffect(() => {
-    let introTimer: number | null = null
-    let bulletDelay: number | null = null
-    let resetTimer: number | null = null
-    let cancelled = false
+    if (timeline.length <= 1) return
 
-    const streamBullet = (index: number) => {
-      if (cancelled) return
-
-      setBulletsVisible(index + 1)
-
-      const bulletWords = manufacturerBullets[index].content.split(" ")
-      let wordIndex = 0
-
-      const bulletTimer = window.setInterval(() => {
-        wordIndex += 1
-        setBulletWordCounts((current) => {
-          const next = [...current]
-          next[index] = Math.min(wordIndex, bulletWords.length)
-          return next
-        })
-
-        if (wordIndex >= bulletWords.length) {
-          window.clearInterval(bulletTimer)
-
-          if (index < manufacturerBullets.length - 1) {
-            bulletDelay = window.setTimeout(() => streamBullet(index + 1), 210)
-          } else {
-            resetTimer = window.setTimeout(() => {
-              if (cancelled) return
-              setIntroWordsVisible(0)
-              setBulletsVisible(0)
-              setBulletWordCounts(manufacturerBullets.map(() => 0))
-            }, STREAM_RESET_MS)
-          }
-        }
-      }, STREAM_STEP_MS)
-    }
-
-    let introIndex = 0
-    introTimer = window.setInterval(() => {
-      introIndex += 1
-      setIntroWordsVisible(Math.min(introIndex, introWords.length))
-
-      if (introIndex >= introWords.length) {
-        if (introTimer) {
-          window.clearInterval(introTimer)
-        }
-        bulletDelay = window.setTimeout(() => streamBullet(0), 220)
-      }
+    const intervalId = window.setInterval(() => {
+      setCurrentFrame((current) => (current + 1) % timeline.length)
     }, STREAM_STEP_MS)
 
-    return () => {
-      cancelled = true
-      if (introTimer) window.clearInterval(introTimer)
-      if (bulletDelay) window.clearTimeout(bulletDelay)
-      if (resetTimer) window.clearTimeout(resetTimer)
-    }
-  }, [introWords])
+    return () => window.clearInterval(intervalId)
+  }, [timeline])
 
   useEffect(() => {
     if (!scrollRef.current) return
+
+    if (currentFrame === 0) {
+      scrollRef.current.scrollTo({
+        top: 0,
+        behavior: "auto",
+      })
+      return
+    }
 
     scrollRef.current.scrollTo({
       top: scrollRef.current.scrollHeight,
       behavior: "smooth",
     })
-  }, [introWordsVisible, bulletsVisible, bulletWordCounts])
+  }, [currentFrame])
 
   return (
     <section className="relative overflow-hidden bg-white text-[#17171c]">
@@ -156,39 +216,48 @@ export function ChatPreviewSection() {
 
                   <div className="space-y-5 text-[0.9rem] leading-7 text-[#20242d] sm:text-[0.96rem]">
                     <p>
-                      {introWords.slice(0, introWordsVisible).join(" ")}
-                      {introWordsVisible < introWords.length && (
+                      {introWords.slice(0, frame.introCount).join(" ")}
+                      {frame.introCount < introWords.length && (
                         <span className="ml-1 inline-block h-[1em] w-[0.08em] animate-pulse rounded-full bg-[#7a8090] align-[-0.12em]" />
                       )}
                     </p>
 
-                    <div>
-                      <h3
-                        className={`${inter.className} text-[1.08rem] font-[700] tracking-[-0.02em] text-[#17171c] sm:text-[1.14rem]`}
-                      >
-                        Manufacturer&apos;s Solution
-                      </h3>
+                    {(frame.headingCount > 0 || frame.bulletsVisible > 0) && (
+                      <div>
+                        <h3
+                          className={`${inter.className} text-[1.08rem] font-[700] tracking-[-0.02em] text-[#17171c] sm:text-[1.14rem]`}
+                        >
+                          {headingWords.slice(0, frame.headingCount).join(" ")}
+                          {frame.headingCount < headingWords.length && (
+                            <span className="ml-1 inline-block h-[1em] w-[0.08em] animate-pulse rounded-full bg-[#7a8090] align-[-0.12em]" />
+                          )}
+                        </h3>
 
-                      <ul className="mt-4 space-y-3 pl-5">
-                        {manufacturerBullets.slice(0, bulletsVisible).map((bullet, index) => (
-                          <li key={bullet.title} className="pl-1">
-                            <span className="font-[700] text-[#17171c]">
-                              {bullet.title}
-                            </span>{" "}
-                            —{" "}
-                            {bullet.content
-                              .split(" ")
-                              .slice(0, bulletWordCounts[index])
-                              .join(" ")}
-                            {index === bulletsVisible - 1 &&
-                              bulletWordCounts[index] <
-                                bullet.content.split(" ").length && (
-                                <span className="ml-1 inline-block h-[1em] w-[0.08em] animate-pulse rounded-full bg-[#7a8090] align-[-0.12em]" />
-                              )}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                        {frame.bulletsVisible > 0 && (
+                          <ul className="mt-4 space-y-3 pl-5">
+                            {manufacturerBullets
+                              .slice(0, frame.bulletsVisible)
+                              .map((bullet, index) => (
+                                <li key={bullet.title} className="pl-1">
+                                  <span className="font-[700] text-[#17171c]">
+                                    {bullet.title}
+                                  </span>{" "}
+                                  —{" "}
+                                  {bullet.content
+                                    .split(" ")
+                                    .slice(0, frame.bulletWordCounts[index])
+                                    .join(" ")}
+                                  {index === frame.bulletsVisible - 1 &&
+                                    frame.bulletWordCounts[index] <
+                                      bullet.content.split(" ").length && (
+                                      <span className="ml-1 inline-block h-[1em] w-[0.08em] animate-pulse rounded-full bg-[#7a8090] align-[-0.12em]" />
+                                    )}
+                                </li>
+                              ))}
+                          </ul>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
