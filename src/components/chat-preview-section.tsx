@@ -374,7 +374,7 @@ export function ChatPreviewSection() {
                     {frame.showFlowchartImage && (
                       <div className="overflow-hidden rounded-[1.35rem] border border-[#e2e4ea] bg-white shadow-[0_10px_30px_rgba(17,23,28,0.06)]">
                         <Image
-                          src="/chat-flowchart.svg"
+                          src="/eng-flowchart.webp"
                           alt="Film slippage troubleshooting flowchart"
                           width={640}
                           height={1140}
