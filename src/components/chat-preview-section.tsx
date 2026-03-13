@@ -1,6 +1,8 @@
-import { Mic, SendHorizontal } from "lucide-react"
+"use client"
 
-import { brandSans } from "@/lib/fonts"
+import { useEffect, useMemo, useRef, useState } from "react"
+
+import { brandSans, inter } from "@/lib/fonts"
 
 const manufacturerBullets = [
   {
@@ -35,7 +37,91 @@ const manufacturerBullets = [
   },
 ]
 
+const introText =
+  "Film slippage (film slipping) is usually caused by film tension, worn or dirty pull components, misaligned rolls, or bad splices. The manual documents the fault indicators on the Home Screen and gives specific causes and corrective actions you should run through before calling service."
+
+const STREAM_STEP_MS = 28
+const STREAM_RESET_MS = 2600
+
 export function ChatPreviewSection() {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [introWordsVisible, setIntroWordsVisible] = useState(0)
+  const [bulletsVisible, setBulletsVisible] = useState(0)
+  const [bulletWordCounts, setBulletWordCounts] = useState<number[]>(
+    manufacturerBullets.map(() => 0)
+  )
+
+  const introWords = useMemo(() => introText.split(" "), [])
+
+  useEffect(() => {
+    let introTimer: number | null = null
+    let bulletDelay: number | null = null
+    let resetTimer: number | null = null
+    let cancelled = false
+
+    const streamBullet = (index: number) => {
+      if (cancelled) return
+
+      setBulletsVisible(index + 1)
+
+      const bulletWords = manufacturerBullets[index].content.split(" ")
+      let wordIndex = 0
+
+      const bulletTimer = window.setInterval(() => {
+        wordIndex += 1
+        setBulletWordCounts((current) => {
+          const next = [...current]
+          next[index] = Math.min(wordIndex, bulletWords.length)
+          return next
+        })
+
+        if (wordIndex >= bulletWords.length) {
+          window.clearInterval(bulletTimer)
+
+          if (index < manufacturerBullets.length - 1) {
+            bulletDelay = window.setTimeout(() => streamBullet(index + 1), 210)
+          } else {
+            resetTimer = window.setTimeout(() => {
+              if (cancelled) return
+              setIntroWordsVisible(0)
+              setBulletsVisible(0)
+              setBulletWordCounts(manufacturerBullets.map(() => 0))
+            }, STREAM_RESET_MS)
+          }
+        }
+      }, STREAM_STEP_MS)
+    }
+
+    let introIndex = 0
+    introTimer = window.setInterval(() => {
+      introIndex += 1
+      setIntroWordsVisible(Math.min(introIndex, introWords.length))
+
+      if (introIndex >= introWords.length) {
+        if (introTimer) {
+          window.clearInterval(introTimer)
+        }
+        bulletDelay = window.setTimeout(() => streamBullet(0), 220)
+      }
+    }, STREAM_STEP_MS)
+
+    return () => {
+      cancelled = true
+      if (introTimer) window.clearInterval(introTimer)
+      if (bulletDelay) window.clearTimeout(bulletDelay)
+      if (resetTimer) window.clearTimeout(resetTimer)
+    }
+  }, [introWords])
+
+  useEffect(() => {
+    if (!scrollRef.current) return
+
+    scrollRef.current.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    })
+  }, [introWordsVisible, bulletsVisible, bulletWordCounts])
+
   return (
     <section className="relative overflow-hidden bg-white text-[#17171c]">
       <div className="mx-auto grid max-w-7xl gap-12 px-6 py-24 sm:px-8 md:py-28 lg:grid-cols-[minmax(0,0.95fr)_minmax(420px,1.05fr)] lg:items-center">
@@ -55,56 +141,53 @@ export function ChatPreviewSection() {
 
           <div className="relative overflow-hidden rounded-[2rem] border border-black/[0.06] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(241,242,246,0.92))] p-3 shadow-[0_30px_90px_rgba(17,23,28,0.12)] backdrop-blur-xl sm:p-4">
             <div className="overflow-hidden rounded-[1.65rem] border border-white/70 bg-white/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]">
-              <div className="flex h-[620px] flex-col bg-[#fbfbfc] sm:h-[700px]">
-                <div className="flex-1 overflow-y-auto px-5 py-5 sm:px-6 sm:py-6">
-                  <div className="mb-8 flex justify-end">
-                    <div className="max-w-[72%] rounded-[1.45rem] bg-[#f2f2f3] px-5 py-4 text-[1.02rem] leading-8 text-[#17171c] shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
+              <div
+                className={`${inter.className} flex h-[440px] flex-col bg-[#fbfbfc] sm:h-[520px]`}
+              >
+                <div
+                  ref={scrollRef}
+                  className="flex-1 overflow-y-auto px-4 py-4 sm:px-5 sm:py-5"
+                >
+                  <div className="mb-6 flex justify-end">
+                    <div className="max-w-[72%] rounded-[1.2rem] bg-[#f2f2f3] px-4 py-3 text-[0.92rem] leading-7 text-[#17171c] shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] sm:text-[0.95rem]">
                       How do I fix film slipping?
                     </div>
                   </div>
 
-                  <div className="space-y-6 text-[1.02rem] leading-8 text-[#20242d] sm:text-[1.08rem]">
+                  <div className="space-y-5 text-[0.9rem] leading-7 text-[#20242d] sm:text-[0.96rem]">
                     <p>
-                      Film slippage (film slipping) is usually caused by film
-                      tension, worn or dirty pull components, misaligned rolls,
-                      or bad splices. The manual documents the fault indicators
-                      on the Home Screen and gives specific causes and
-                      corrective actions you should run through before calling
-                      service.
+                      {introWords.slice(0, introWordsVisible).join(" ")}
+                      {introWordsVisible < introWords.length && (
+                        <span className="ml-1 inline-block h-[1em] w-[0.08em] animate-pulse rounded-full bg-[#7a8090] align-[-0.12em]" />
+                      )}
                     </p>
 
                     <div>
                       <h3
-                        className={`${brandSans.className} text-[1.35rem] font-[700] tracking-[-0.03em] text-[#17171c]`}
+                        className={`${inter.className} text-[1.08rem] font-[700] tracking-[-0.02em] text-[#17171c] sm:text-[1.14rem]`}
                       >
                         Manufacturer&apos;s Solution
                       </h3>
 
-                      <ul className="mt-5 space-y-4 pl-6">
-                        {manufacturerBullets.map((bullet) => (
+                      <ul className="mt-4 space-y-3 pl-5">
+                        {manufacturerBullets.slice(0, bulletsVisible).map((bullet, index) => (
                           <li key={bullet.title} className="pl-1">
                             <span className="font-[700] text-[#17171c]">
                               {bullet.title}
                             </span>{" "}
-                            — {bullet.content}
+                            —{" "}
+                            {bullet.content
+                              .split(" ")
+                              .slice(0, bulletWordCounts[index])
+                              .join(" ")}
+                            {index === bulletsVisible - 1 &&
+                              bulletWordCounts[index] <
+                                bullet.content.split(" ").length && (
+                                <span className="ml-1 inline-block h-[1em] w-[0.08em] animate-pulse rounded-full bg-[#7a8090] align-[-0.12em]" />
+                              )}
                           </li>
                         ))}
                       </ul>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-t border-black/[0.06] bg-white/92 px-3 py-3 sm:px-4 sm:py-4">
-                  <div className="flex items-center gap-3 rounded-full border border-black/[0.08] bg-[#fafafa] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.82)]">
-                    <Mic className="h-5 w-5 text-[#8d93a1]" strokeWidth={2.2} />
-                    <span className="flex-1 text-base text-[#9aa0ab]">
-                      Ask anything
-                    </span>
-                    <span className="rounded-full border border-black/[0.08] bg-white px-4 py-1.5 text-[0.96rem] text-[#5d6471]">
-                      Fast
-                    </span>
-                    <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#d5d8dd] text-[#ffffff]">
-                      <SendHorizontal className="h-5 w-5" strokeWidth={2.2} />
                     </div>
                   </div>
                 </div>
