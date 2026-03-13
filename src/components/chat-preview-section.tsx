@@ -58,7 +58,9 @@ function ChatPreviewFlowchart({
         >
           <g className={showStep(1)}>
             <rect x="210" y="18" width="300" height="68" rx="0" />
-            <text x="360" y="52">Record slippage &amp; errors</text>
+            <text x="360" y="52" fill="#000000">
+              Record slippage &amp; errors
+            </text>
             <line
               x1="360"
               y1="86"
@@ -71,11 +73,13 @@ function ChatPreviewFlowchart({
 
           <g className={showStep(2)}>
             <polygon points="360,148 510,292 360,436 210,292" />
-            <text x="360" y="292">Roll misaligned or splice?</text>
+            <text x="360" y="292" fill="#000000">
+              Roll misaligned or splice?
+            </text>
           </g>
 
           <g className={showStep(3)}>
-            <text x="435" y="462" fill="#2b2f38">
+            <text x="435" y="462" fill="#000000">
               Yes
             </text>
             <path
@@ -85,11 +89,13 @@ function ChatPreviewFlowchart({
               markerEnd="url(#flow-arrow)"
             />
             <rect x="430" y="506" width="226" height="62" rx="0" />
-            <text x="543" y="537">Re-center roll / fix splice</text>
+            <text x="543" y="537" fill="#000000">
+              Re-center roll / fix splice
+            </text>
           </g>
 
           <g className={showStep(4)}>
-            <text x="178" y="532" fill="#2b2f38">
+            <text x="178" y="532" fill="#000000">
               No
             </text>
             <path
@@ -105,7 +111,9 @@ function ChatPreviewFlowchart({
               markerEnd="url(#flow-arrow)"
             />
             <rect x="205" y="620" width="310" height="62" rx="0" />
-            <text x="360" y="651">Clean belts, sensors, tube</text>
+            <text x="360" y="651" fill="#000000">
+              Clean belts, sensors, tube
+            </text>
             <line
               x1="360"
               y1="682"
@@ -118,7 +126,9 @@ function ChatPreviewFlowchart({
 
           <g className={showStep(5)}>
             <rect x="228" y="744" width="264" height="62" rx="0" />
-            <text x="360" y="775">Adjust tension &amp; test</text>
+            <text x="360" y="775" fill="#000000">
+              Adjust tension &amp; test
+            </text>
             <line
               x1="360"
               y1="806"
@@ -131,11 +141,13 @@ function ChatPreviewFlowchart({
 
           <g className={showStep(6)}>
             <polygon points="360,875 500,1010 360,1145 220,1010" />
-            <text x="360" y="1010">Slippage resolved?</text>
+            <text x="360" y="1010" fill="#000000">
+              Slippage resolved?
+            </text>
           </g>
 
           <g className={showStep(7)}>
-            <text x="148" y="1150" fill="#2b2f38">
+            <text x="148" y="1150" fill="#000000">
               Yes
             </text>
             <path
@@ -145,11 +157,13 @@ function ChatPreviewFlowchart({
               markerEnd="url(#flow-arrow)"
             />
             <rect x="56" y="1246" width="210" height="60" rx="0" />
-            <text x="161" y="1276">Resume production</text>
+            <text x="161" y="1276" fill="#000000">
+              Resume production
+            </text>
           </g>
 
           <g className={showStep(8)}>
-            <text x="442" y="1150" fill="#2b2f38">
+            <text x="442" y="1150" fill="#000000">
               No
             </text>
             <path
@@ -159,11 +173,13 @@ function ChatPreviewFlowchart({
               markerEnd="url(#flow-arrow)"
             />
             <polygon points="500,1205 615,1315 500,1425 385,1315" />
-            <text x="500" y="1315">Belts worn?</text>
+            <text x="500" y="1315" fill="#000000">
+              Belts worn?
+            </text>
           </g>
 
           <g className={showStep(9)}>
-            <text x="496" y="1456" fill="#2b2f38">
+            <text x="496" y="1456" fill="#000000">
               Yes
             </text>
             <path
@@ -173,7 +189,9 @@ function ChatPreviewFlowchart({
               markerEnd="url(#flow-arrow)"
             />
             <rect x="438" y="1484" width="124" height="60" rx="0" />
-            <text x="500" y="1514">Replace belts</text>
+            <text x="500" y="1514" fill="#000000">
+              Replace belts
+            </text>
             <path
               d="M 562 1514 C 650 1514, 662 1438, 662 1170 L 662 875 C 662 815, 602 790, 492 775"
               fill="none"
@@ -183,7 +201,7 @@ function ChatPreviewFlowchart({
           </g>
 
           <g className={showStep(10)}>
-            <text x="676" y="1208" fill="#2b2f38">
+            <text x="676" y="1208" fill="#000000">
               No
             </text>
             <path
@@ -193,7 +211,9 @@ function ChatPreviewFlowchart({
               markerEnd="url(#flow-arrow)"
             />
             <rect x="602" y="1424" width="100" height="60" rx="0" />
-            <text x="652" y="1454">Call service</text>
+            <text x="652" y="1454" fill="#000000">
+              Call service
+            </text>
           </g>
         </g>
       </svg>
