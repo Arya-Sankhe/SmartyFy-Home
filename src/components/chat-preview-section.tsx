@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { useEffect, useMemo, useRef, useState } from "react"
 
 import { brandSans, inter } from "@/lib/fonts"
@@ -12,213 +13,6 @@ interface ConversationBullet {
 interface ConversationSection {
   heading: string
   bullets: ConversationBullet[]
-}
-
-function ChatPreviewFlowchart({
-  visibleStepCount,
-}: {
-  visibleStepCount: number
-}) {
-  const showStep = (step: number) =>
-    visibleStepCount >= step
-      ? "opacity-100 transition-opacity duration-300"
-      : "opacity-0"
-
-  return (
-    <div className="rounded-[1.35rem] border border-[#e2e4ea] bg-white p-4 shadow-[0_10px_30px_rgba(17,23,28,0.06)] sm:p-5">
-      <svg
-        viewBox="0 0 720 1560"
-        className="h-auto w-full"
-        role="img"
-        aria-label="Film slippage troubleshooting flowchart"
-      >
-        <defs>
-          <marker
-            id="flow-arrow"
-            viewBox="0 0 10 10"
-            refX="9"
-            refY="5"
-            markerWidth="7"
-            markerHeight="7"
-            orient="auto-start-reverse"
-          >
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#8a8d95" />
-          </marker>
-        </defs>
-
-        <g
-          fill="#fbfbfc"
-          stroke="#a5a8af"
-          strokeWidth="2.2"
-          fontFamily="Inter, sans-serif"
-          fontSize="16"
-          fontWeight="500"
-          textAnchor="middle"
-          dominantBaseline="middle"
-        >
-          <g className={showStep(1)}>
-            <rect x="210" y="18" width="300" height="68" rx="0" />
-            <text x="360" y="52" fill="#000000">
-              Record slippage &amp; errors
-            </text>
-            <line
-              x1="360"
-              y1="86"
-              x2="360"
-              y2="145"
-              stroke="#8a8d95"
-              markerEnd="url(#flow-arrow)"
-            />
-          </g>
-
-          <g className={showStep(2)}>
-            <polygon points="360,148 510,292 360,436 210,292" />
-            <text x="360" y="292" fill="#000000">
-              Roll misaligned or splice?
-            </text>
-          </g>
-
-          <g className={showStep(3)}>
-            <text x="435" y="462" fill="#000000">
-              Yes
-            </text>
-            <path
-              d="M 440 392 C 470 430, 490 470, 490 505"
-              fill="none"
-              stroke="#8a8d95"
-              markerEnd="url(#flow-arrow)"
-            />
-            <rect x="430" y="506" width="226" height="62" rx="0" />
-            <text x="543" y="537" fill="#000000">
-              Re-center roll / fix splice
-            </text>
-          </g>
-
-          <g className={showStep(4)}>
-            <text x="178" y="532" fill="#000000">
-              No
-            </text>
-            <path
-              d="M 284 392 C 248 452, 246 520, 292 565"
-              fill="none"
-              stroke="#8a8d95"
-              markerEnd="url(#flow-arrow)"
-            />
-            <path
-              d="M 543 568 C 543 602, 520 620, 492 620"
-              fill="none"
-              stroke="#8a8d95"
-              markerEnd="url(#flow-arrow)"
-            />
-            <rect x="205" y="620" width="310" height="62" rx="0" />
-            <text x="360" y="651" fill="#000000">
-              Clean belts, sensors, tube
-            </text>
-            <line
-              x1="360"
-              y1="682"
-              x2="360"
-              y2="742"
-              stroke="#8a8d95"
-              markerEnd="url(#flow-arrow)"
-            />
-          </g>
-
-          <g className={showStep(5)}>
-            <rect x="228" y="744" width="264" height="62" rx="0" />
-            <text x="360" y="775" fill="#000000">
-              Adjust tension &amp; test
-            </text>
-            <line
-              x1="360"
-              y1="806"
-              x2="360"
-              y2="872"
-              stroke="#8a8d95"
-              markerEnd="url(#flow-arrow)"
-            />
-          </g>
-
-          <g className={showStep(6)}>
-            <polygon points="360,875 500,1010 360,1145 220,1010" />
-            <text x="360" y="1010" fill="#000000">
-              Slippage resolved?
-            </text>
-          </g>
-
-          <g className={showStep(7)}>
-            <text x="148" y="1150" fill="#000000">
-              Yes
-            </text>
-            <path
-              d="M 285 1078 C 235 1115, 160 1180, 160 1244"
-              fill="none"
-              stroke="#8a8d95"
-              markerEnd="url(#flow-arrow)"
-            />
-            <rect x="56" y="1246" width="210" height="60" rx="0" />
-            <text x="161" y="1276" fill="#000000">
-              Resume production
-            </text>
-          </g>
-
-          <g className={showStep(8)}>
-            <text x="442" y="1150" fill="#000000">
-              No
-            </text>
-            <path
-              d="M 435 1078 C 468 1120, 500 1160, 500 1200"
-              fill="none"
-              stroke="#8a8d95"
-              markerEnd="url(#flow-arrow)"
-            />
-            <polygon points="500,1205 615,1315 500,1425 385,1315" />
-            <text x="500" y="1315" fill="#000000">
-              Belts worn?
-            </text>
-          </g>
-
-          <g className={showStep(9)}>
-            <text x="496" y="1456" fill="#000000">
-              Yes
-            </text>
-            <path
-              d="M 500 1425 L 500 1482"
-              fill="none"
-              stroke="#8a8d95"
-              markerEnd="url(#flow-arrow)"
-            />
-            <rect x="438" y="1484" width="124" height="60" rx="0" />
-            <text x="500" y="1514" fill="#000000">
-              Replace belts
-            </text>
-            <path
-              d="M 562 1514 C 650 1514, 662 1438, 662 1170 L 662 875 C 662 815, 602 790, 492 775"
-              fill="none"
-              stroke="#8a8d95"
-              markerEnd="url(#flow-arrow)"
-            />
-          </g>
-
-          <g className={showStep(10)}>
-            <text x="676" y="1208" fill="#000000">
-              No
-            </text>
-            <path
-              d="M 615 1340 C 670 1365, 696 1385, 696 1422"
-              fill="none"
-              stroke="#8a8d95"
-              markerEnd="url(#flow-arrow)"
-            />
-            <rect x="602" y="1424" width="100" height="60" rx="0" />
-            <text x="652" y="1454" fill="#000000">
-              Call service
-            </text>
-          </g>
-        </g>
-      </svg>
-    </div>
-  )
 }
 
 const manufacturerBullets = [
@@ -347,8 +141,7 @@ const STREAM_RESET_MS = 2600
 const INTRO_PAUSE_FRAMES = 8
 const HEADING_PAUSE_FRAMES = 7
 const BULLET_PAUSE_FRAMES = 6
-const FLOWCHART_STEP_COUNT = 10
-const FLOWCHART_STEP_FRAMES = 7
+const FLOWCHART_HOLD_FRAMES = 18
 const OUTRO_PAUSE_FRAMES = 10
 
 interface StreamFrame {
@@ -356,7 +149,7 @@ interface StreamFrame {
   sectionHeadingCounts: number[]
   sectionBulletsVisible: number[]
   sectionBulletWordCounts: number[][]
-  flowchartStepCount: number
+  showFlowchartImage: boolean
   outroCount: number
 }
 
@@ -386,7 +179,7 @@ export function ChatPreviewSection() {
     )
     const frames: StreamFrame[] = []
     let introCount = 0
-    let flowchartStepCount = 0
+    let showFlowchartImage = false
     let outroCount = 0
 
     const pushFrame = () => {
@@ -395,7 +188,7 @@ export function ChatPreviewSection() {
         sectionHeadingCounts: [...headingCounts],
         sectionBulletsVisible: [...bulletsVisible],
         sectionBulletWordCounts: bulletWordCounts.map((section) => [...section]),
-        flowchartStepCount,
+        showFlowchartImage,
         outroCount,
       })
     }
@@ -437,12 +230,9 @@ export function ChatPreviewSection() {
       })
     })
 
-    for (let stepIndex = 1; stepIndex <= FLOWCHART_STEP_COUNT; stepIndex += 1) {
-      flowchartStepCount = stepIndex
-
-      for (let frameIndex = 0; frameIndex < FLOWCHART_STEP_FRAMES; frameIndex += 1) {
-        pushFrame()
-      }
+    showFlowchartImage = true
+    for (let frameIndex = 0; frameIndex < FLOWCHART_HOLD_FRAMES; frameIndex += 1) {
+      pushFrame()
     }
 
     for (let index = 1; index <= outroWords.length; index += 1) {
@@ -581,10 +371,17 @@ export function ChatPreviewSection() {
                       )
                     })}
 
-                    {frame.flowchartStepCount > 0 && (
-                      <ChatPreviewFlowchart
-                        visibleStepCount={frame.flowchartStepCount}
-                      />
+                    {frame.showFlowchartImage && (
+                      <div className="overflow-hidden rounded-[1.35rem] border border-[#e2e4ea] bg-white shadow-[0_10px_30px_rgba(17,23,28,0.06)]">
+                        <Image
+                          src="/chat-flowchart.svg"
+                          alt="Film slippage troubleshooting flowchart"
+                          width={640}
+                          height={1140}
+                          className="h-auto w-full"
+                          priority={false}
+                        />
+                      </div>
                     )}
 
                     {frame.outroCount > 0 && (
