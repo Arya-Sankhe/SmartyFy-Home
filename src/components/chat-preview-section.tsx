@@ -123,7 +123,7 @@ const nextStepsBullets = [
 const introText =
   "Film slippage (film slipping) is usually caused by film tension, worn or dirty pull components, misaligned rolls, or bad splices. The manual documents the fault indicators on the Home Screen and gives specific causes and corrective actions you should run through before calling service."
 const outroText =
-  "If you want, tell me what you see on the Home Screen Film Slippage value and whether belts or the forming tube look dirty. I can give a prioritized checklist tuned to your symptoms."
+  "If you want, tell me the current Film Slippage value and what you see on the pull belts/forming tube and I'll suggest the most-likely next physical adjustment."
 
 const conversationSections: ConversationSection[] = [
   {
@@ -142,6 +142,7 @@ const INTRO_PAUSE_FRAMES = 8
 const HEADING_PAUSE_FRAMES = 7
 const BULLET_PAUSE_FRAMES = 6
 const FLOWCHART_HOLD_FRAMES = 18
+const VIDEO_ELEMENT_HOLD_FRAMES = 18
 const OUTRO_PAUSE_FRAMES = 10
 
 interface StreamFrame {
@@ -150,6 +151,7 @@ interface StreamFrame {
   sectionBulletsVisible: number[]
   sectionBulletWordCounts: number[][]
   showFlowchartImage: boolean
+  showVideoElementImage: boolean
   outroCount: number
 }
 
@@ -180,6 +182,7 @@ export function ChatPreviewSection() {
     const frames: StreamFrame[] = []
     let introCount = 0
     let showFlowchartImage = false
+    let showVideoElementImage = false
     let outroCount = 0
 
     const pushFrame = () => {
@@ -189,6 +192,7 @@ export function ChatPreviewSection() {
         sectionBulletsVisible: [...bulletsVisible],
         sectionBulletWordCounts: bulletWordCounts.map((section) => [...section]),
         showFlowchartImage,
+        showVideoElementImage,
         outroCount,
       })
     }
@@ -230,17 +234,22 @@ export function ChatPreviewSection() {
       })
     })
 
-    showFlowchartImage = true
-    for (let frameIndex = 0; frameIndex < FLOWCHART_HOLD_FRAMES; frameIndex += 1) {
-      pushFrame()
-    }
-
     for (let index = 1; index <= outroWords.length; index += 1) {
       outroCount = index
       pushFrame()
     }
 
     for (let index = 0; index < OUTRO_PAUSE_FRAMES; index += 1) {
+      pushFrame()
+    }
+
+    showFlowchartImage = true
+    for (let frameIndex = 0; frameIndex < FLOWCHART_HOLD_FRAMES; frameIndex += 1) {
+      pushFrame()
+    }
+
+    showVideoElementImage = true
+    for (let frameIndex = 0; frameIndex < VIDEO_ELEMENT_HOLD_FRAMES; frameIndex += 1) {
       pushFrame()
     }
 
@@ -371,6 +380,15 @@ export function ChatPreviewSection() {
                       )
                     })}
 
+                    {frame.outroCount > 0 && (
+                      <p>
+                        {outroWords.slice(0, frame.outroCount).join(" ")}
+                        {frame.outroCount < outroWords.length && (
+                          <span className="ml-1 inline-block h-[1em] w-[0.08em] animate-pulse rounded-full bg-[#7a8090] align-[-0.12em]" />
+                        )}
+                      </p>
+                    )}
+
                     {frame.showFlowchartImage && (
                       <div className="overflow-hidden rounded-[1.35rem] border border-[#e2e4ea] bg-white shadow-[0_10px_30px_rgba(17,23,28,0.06)]">
                         <Image
@@ -384,13 +402,17 @@ export function ChatPreviewSection() {
                       </div>
                     )}
 
-                    {frame.outroCount > 0 && (
-                      <p>
-                        {outroWords.slice(0, frame.outroCount).join(" ")}
-                        {frame.outroCount < outroWords.length && (
-                          <span className="ml-1 inline-block h-[1em] w-[0.08em] animate-pulse rounded-full bg-[#7a8090] align-[-0.12em]" />
-                        )}
-                      </p>
+                    {frame.showVideoElementImage && (
+                      <div className="overflow-hidden rounded-[1.35rem] border border-[#e2e4ea] bg-white shadow-[0_10px_30px_rgba(17,23,28,0.06)]">
+                        <Image
+                          src="/video-element.webp"
+                          alt="SmartyFy interface preview"
+                          width={640}
+                          height={1140}
+                          className="h-auto w-full"
+                          priority={false}
+                        />
+                      </div>
                     )}
                   </div>
                 </div>
