@@ -4,6 +4,16 @@ import { useEffect, useMemo, useRef, useState } from "react"
 
 import { brandSans, inter } from "@/lib/fonts"
 
+interface ConversationBullet {
+  title: string
+  content: string
+}
+
+interface ConversationSection {
+  heading: string
+  bullets: ConversationBullet[]
+}
+
 const manufacturerBullets = [
   {
     title: "Film Slippage (displayed value)",
@@ -26,6 +36,16 @@ const manufacturerBullets = [
       "Contaminated pull belts or a dirty registration/photo-eye lens cause tracking errors and slippage (Page 20).",
   },
   {
+    title: "Probable causes: forming tube contamination",
+    content:
+      "Oil or seasoning buildup on the forming tube can produce uneven drag and tracking or slip problems (Page 28).",
+  },
+  {
+    title: "Probable causes: bad splice",
+    content:
+      "A poor splice that is not straight or not fully taped can jam or slip when passing the forming tube (Page 20).",
+  },
+  {
     title: "Corrective action: re-center the film roll",
     content:
       "Re-center the roll on the spindle to correct misalignment (Page 20).",
@@ -35,23 +55,99 @@ const manufacturerBullets = [
     content:
       "Increase or adjust film tension or modify the dancer arm settings to remove slack (Page 20).",
   },
+  {
+    title: "Corrective action: clean pull belts and registration sensor lens",
+    content:
+      "Remove debris and film residue from belts and clean the photo-eye lens (Page 20).",
+  },
+  {
+    title: "Corrective action: clean forming tube / replace worn belts",
+    content:
+      "Clean oil or seasoning from the forming tube and replace worn pull belts if necessary (Page 28).",
+  },
+  {
+    title: "Corrective action: check and redo splice",
+    content:
+      "Cut and splice correctly using splicing tape; ensure splice is straight and taped across both edges (Page 20).",
+  },
+  {
+    title: "Procedure reminders for roll changeover",
+    content:
+      "Safely cut expiring film, load new roll, use splicing tape, clear the Film End error, and verify the splice passes cleanly before resuming production (Page 20).",
+  },
+]
+
+const nextStepsBullets = [
+  {
+    title: "Stop the machine",
+    content: "Work safely with lockout or tagout as required.",
+  },
+  {
+    title: "Visually inspect and re-center the film roll",
+    content:
+      "Use Home Screen Act Diameter and Film Slippage to confirm improvement while re-centering the roll on the spindle (Page 32, Page 35).",
+  },
+  {
+    title: "Clean the pull belts and photo-eye lens",
+    content:
+      "Inspect belts for wear or glazing and replace belts if worn (Page 20, Page 28).",
+  },
+  {
+    title: "Clean the forming tube",
+    content:
+      "Remove oil or seasoning residue that can cause uneven drag (Page 28).",
+  },
+  {
+    title: "Adjust film tension / dancer arm settings",
+    content:
+      "Re-run at low speed to check tracking after the adjustment (Page 20).",
+  },
+  {
+    title: "Check the splice",
+    content:
+      "Verify straightness and full edge taping, redo the splice if needed, and confirm it passes the forming tube cleanly (Page 20).",
+  },
+  {
+    title: "Monitor Film Slippage and Act Diameter",
+    content:
+      "Watch the Home Screen while testing and run several pouches at production speed once the machine is stable (Page 32, Page 35).",
+  },
+  {
+    title: "If the problem persists",
+    content:
+      "Replace suspect pull belts, document the maintenance action, and contact service if slippage continues after these steps.",
+  },
 ]
 
 const introText =
   "Film slippage (film slipping) is usually caused by film tension, worn or dirty pull components, misaligned rolls, or bad splices. The manual documents the fault indicators on the Home Screen and gives specific causes and corrective actions you should run through before calling service."
-const headingText = "Manufacturer's Solution"
+const outroText =
+  "If you want, tell me what you see on the Home Screen Film Slippage value and whether belts or the forming tube look dirty. I can give a prioritized checklist tuned to your symptoms."
+
+const conversationSections: ConversationSection[] = [
+  {
+    heading: "Manufacturer's Solution",
+    bullets: manufacturerBullets,
+  },
+  {
+    heading: "Next Steps",
+    bullets: nextStepsBullets,
+  },
+]
 
 const STREAM_STEP_MS = 28
 const STREAM_RESET_MS = 2600
 const INTRO_PAUSE_FRAMES = 8
 const HEADING_PAUSE_FRAMES = 7
 const BULLET_PAUSE_FRAMES = 6
+const OUTRO_PAUSE_FRAMES = 10
 
 interface StreamFrame {
   introCount: number
-  headingCount: number
-  bulletsVisible: number
-  bulletWordCounts: number[]
+  sectionHeadingCounts: number[]
+  sectionBulletsVisible: number[]
+  sectionBulletWordCounts: number[][]
+  outroCount: number
 }
 
 export function ChatPreviewSection() {
@@ -59,99 +155,93 @@ export function ChatPreviewSection() {
   const [currentFrame, setCurrentFrame] = useState(0)
 
   const introWords = useMemo(() => introText.split(" "), [])
-  const headingWords = useMemo(() => headingText.split(" "), [])
-  const bulletWordLists = useMemo(
-    () => manufacturerBullets.map((bullet) => bullet.content.split(" ")),
+  const outroWords = useMemo(() => outroText.split(" "), [])
+  const sectionHeadingWords = useMemo(
+    () => conversationSections.map((section) => section.heading.split(" ")),
+    []
+  )
+  const sectionBulletWordLists = useMemo(
+    () =>
+      conversationSections.map((section) =>
+        section.bullets.map((bullet) => bullet.content.split(" "))
+      ),
     []
   )
 
   const timeline = useMemo<StreamFrame[]>(() => {
-    const zeroCounts = manufacturerBullets.map(() => 0)
-    const frames: StreamFrame[] = [
-      {
-        introCount: 0,
-        headingCount: 0,
-        bulletsVisible: 0,
-        bulletWordCounts: [...zeroCounts],
-      },
-    ]
+    const headingCounts = conversationSections.map(() => 0)
+    const bulletsVisible = conversationSections.map(() => 0)
+    const bulletWordCounts = sectionBulletWordLists.map((section) =>
+      section.map(() => 0)
+    )
+    const frames: StreamFrame[] = []
+    let introCount = 0
+    let outroCount = 0
+
+    const pushFrame = () => {
+      frames.push({
+        introCount,
+        sectionHeadingCounts: [...headingCounts],
+        sectionBulletsVisible: [...bulletsVisible],
+        sectionBulletWordCounts: bulletWordCounts.map((section) => [...section]),
+        outroCount,
+      })
+    }
+
+    pushFrame()
 
     for (let index = 1; index <= introWords.length; index += 1) {
-      frames.push({
-        introCount: index,
-        headingCount: 0,
-        bulletsVisible: 0,
-        bulletWordCounts: [...zeroCounts],
-      })
+      introCount = index
+      pushFrame()
     }
 
     for (let index = 0; index < INTRO_PAUSE_FRAMES; index += 1) {
-      frames.push({
-        introCount: introWords.length,
-        headingCount: 0,
-        bulletsVisible: 0,
-        bulletWordCounts: [...zeroCounts],
-      })
+      pushFrame()
     }
 
-    for (let index = 1; index <= headingWords.length; index += 1) {
-      frames.push({
-        introCount: introWords.length,
-        headingCount: index,
-        bulletsVisible: 0,
-        bulletWordCounts: [...zeroCounts],
-      })
-    }
+    conversationSections.forEach((section, sectionIndex) => {
+      const headingWords = sectionHeadingWords[sectionIndex]
 
-    for (let index = 0; index < HEADING_PAUSE_FRAMES; index += 1) {
-      frames.push({
-        introCount: introWords.length,
-        headingCount: headingWords.length,
-        bulletsVisible: 0,
-        bulletWordCounts: [...zeroCounts],
-      })
-    }
-
-    const completedCounts = [...zeroCounts]
-
-    bulletWordLists.forEach((bulletWords, bulletIndex) => {
-      for (let wordIndex = 1; wordIndex <= bulletWords.length; wordIndex += 1) {
-        const nextCounts = [...completedCounts]
-        nextCounts[bulletIndex] = wordIndex
-
-        frames.push({
-          introCount: introWords.length,
-          headingCount: headingWords.length,
-          bulletsVisible: bulletIndex + 1,
-          bulletWordCounts: nextCounts,
-        })
+      for (let index = 1; index <= headingWords.length; index += 1) {
+        headingCounts[sectionIndex] = index
+        pushFrame()
       }
 
-      completedCounts[bulletIndex] = bulletWords.length
-
-      for (let pauseIndex = 0; pauseIndex < BULLET_PAUSE_FRAMES; pauseIndex += 1) {
-        frames.push({
-          introCount: introWords.length,
-          headingCount: headingWords.length,
-          bulletsVisible: bulletIndex + 1,
-          bulletWordCounts: [...completedCounts],
-        })
+      for (let index = 0; index < HEADING_PAUSE_FRAMES; index += 1) {
+        pushFrame()
       }
+
+      sectionBulletWordLists[sectionIndex].forEach((bulletWords, bulletIndex) => {
+        bulletsVisible[sectionIndex] = bulletIndex + 1
+
+        for (let wordIndex = 1; wordIndex <= bulletWords.length; wordIndex += 1) {
+          bulletWordCounts[sectionIndex][bulletIndex] = wordIndex
+          pushFrame()
+        }
+
+        for (let pauseIndex = 0; pauseIndex < BULLET_PAUSE_FRAMES; pauseIndex += 1) {
+          pushFrame()
+        }
+      })
     })
+
+    for (let index = 1; index <= outroWords.length; index += 1) {
+      outroCount = index
+      pushFrame()
+    }
+
+    for (let index = 0; index < OUTRO_PAUSE_FRAMES; index += 1) {
+      pushFrame()
+    }
 
     const resetFrames = Math.max(1, Math.round(STREAM_RESET_MS / STREAM_STEP_MS))
 
     for (let index = 0; index < resetFrames; index += 1) {
-      frames.push({
-        introCount: introWords.length,
-        headingCount: headingWords.length,
-        bulletsVisible: manufacturerBullets.length,
-        bulletWordCounts: [...completedCounts],
-      })
+      pushFrame()
     }
 
     return frames
-  }, [bulletWordLists, headingWords, introWords])
+  }, [introWords, outroWords, sectionBulletWordLists, sectionHeadingWords])
 
   const frame = timeline[currentFrame] ?? timeline[0]
 
@@ -222,41 +312,62 @@ export function ChatPreviewSection() {
                       )}
                     </p>
 
-                    {(frame.headingCount > 0 || frame.bulletsVisible > 0) && (
-                      <div>
-                        <h3
-                          className={`${inter.className} text-[1.08rem] font-[700] tracking-[-0.02em] text-[#17171c] sm:text-[1.14rem]`}
-                        >
-                          {headingWords.slice(0, frame.headingCount).join(" ")}
-                          {frame.headingCount < headingWords.length && (
-                            <span className="ml-1 inline-block h-[1em] w-[0.08em] animate-pulse rounded-full bg-[#7a8090] align-[-0.12em]" />
-                          )}
-                        </h3>
+                    {conversationSections.map((section, sectionIndex) => {
+                      const headingWords = sectionHeadingWords[sectionIndex]
+                      const visibleBullets = frame.sectionBulletsVisible[sectionIndex]
+                      const headingCount = frame.sectionHeadingCounts[sectionIndex]
+                      const showSection = headingCount > 0 || visibleBullets > 0
 
-                        {frame.bulletsVisible > 0 && (
-                          <ul className="mt-4 space-y-3 pl-5">
-                            {manufacturerBullets
-                              .slice(0, frame.bulletsVisible)
-                              .map((bullet, index) => (
-                                <li key={bullet.title} className="pl-1">
-                                  <span className="font-[700] text-[#17171c]">
-                                    {bullet.title}
-                                  </span>{" "}
-                                  —{" "}
-                                  {bullet.content
-                                    .split(" ")
-                                    .slice(0, frame.bulletWordCounts[index])
-                                    .join(" ")}
-                                  {index === frame.bulletsVisible - 1 &&
-                                    frame.bulletWordCounts[index] <
-                                      bullet.content.split(" ").length && (
-                                      <span className="ml-1 inline-block h-[1em] w-[0.08em] animate-pulse rounded-full bg-[#7a8090] align-[-0.12em]" />
-                                    )}
-                                </li>
-                              ))}
-                          </ul>
+                      if (!showSection) return null
+
+                      return (
+                        <div key={section.heading}>
+                          <h3
+                            className={`${inter.className} text-[1.08rem] font-[700] tracking-[-0.02em] text-[#17171c] sm:text-[1.14rem]`}
+                          >
+                            {headingWords.slice(0, headingCount).join(" ")}
+                            {headingCount < headingWords.length && (
+                              <span className="ml-1 inline-block h-[1em] w-[0.08em] animate-pulse rounded-full bg-[#7a8090] align-[-0.12em]" />
+                            )}
+                          </h3>
+
+                          {visibleBullets > 0 && (
+                            <ul className="mt-4 space-y-3 pl-5">
+                              {section.bullets
+                                .slice(0, visibleBullets)
+                                .map((bullet, bulletIndex) => {
+                                  const bulletWords =
+                                    sectionBulletWordLists[sectionIndex][bulletIndex]
+                                  const visibleWordCount =
+                                    frame.sectionBulletWordCounts[sectionIndex][bulletIndex]
+
+                                  return (
+                                    <li key={bullet.title} className="pl-1">
+                                      <span className="font-[700] text-[#17171c]">
+                                        {bullet.title}
+                                      </span>{" "}
+                                      —{" "}
+                                      {bulletWords.slice(0, visibleWordCount).join(" ")}
+                                      {bulletIndex === visibleBullets - 1 &&
+                                        visibleWordCount < bulletWords.length && (
+                                          <span className="ml-1 inline-block h-[1em] w-[0.08em] animate-pulse rounded-full bg-[#7a8090] align-[-0.12em]" />
+                                        )}
+                                    </li>
+                                  )
+                                })}
+                            </ul>
+                          )}
+                        </div>
+                      )
+                    })}
+
+                    {frame.outroCount > 0 && (
+                      <p>
+                        {outroWords.slice(0, frame.outroCount).join(" ")}
+                        {frame.outroCount < outroWords.length && (
+                          <span className="ml-1 inline-block h-[1em] w-[0.08em] animate-pulse rounded-full bg-[#7a8090] align-[-0.12em]" />
                         )}
-                      </div>
+                      </p>
                     )}
                   </div>
                 </div>
