@@ -20,6 +20,7 @@ interface ConversationScript {
   introText: string
   sections: ConversationSection[]
   outroText: string
+  flowchartSrc: string
 }
 
 const englishManufacturerBullets = [
@@ -248,6 +249,7 @@ const englishConversation: ConversationScript = {
   ],
   outroText:
     "If you want, tell me the current Film Slippage value and what you see on the pull belts/forming tube and I'll suggest the most-likely next physical adjustment.",
+  flowchartSrc: "/eng-flowchart.webp",
 }
 
 const hindiConversation: ConversationScript = {
@@ -266,6 +268,7 @@ const hindiConversation: ConversationScript = {
   ],
   outroText:
     "अगर आप चाहें, तो मौजूदा Film Slippage value और pull belts/forming tube पर क्या दिख रहा है यह बताइए, मैं सबसे संभावित अगला physical adjustment सुझाऊंगा।",
+  flowchartSrc: "/hindi-flowchart.webp",
 }
 
 const conversations: ConversationScript[] = [
@@ -630,7 +633,7 @@ export function ChatPreviewSection() {
                             {conversationFrame.showFlowchartImage && (
                               <div className="overflow-hidden rounded-[1.35rem] border border-[#e2e4ea] bg-white shadow-[0_10px_30px_rgba(17,23,28,0.06)]">
                                 <Image
-                                  src="/eng-flowchart.webp"
+                                  src={conversation.flowchartSrc}
                                   alt="Film slippage troubleshooting flowchart"
                                   width={640}
                                   height={1140}
